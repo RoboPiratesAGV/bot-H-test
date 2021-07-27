@@ -1,38 +1,33 @@
-#include <RH_ASK.h>   // Include the RH_ASK library
-#include <SPI.h>      // Not actually used but needed to compile the RH_ASK library
- 
-RH_ASK radio(1000, 11, 12);
-
-char signalString[10];
- 
-void setup()
-{
-    Serial.begin(9600);   // Use this for debugging
-    Serial.setTimeout(50);
- 
-    // Speed of 2000 bits per second
-    // Use pin 11 for reception
-    // Use pin 12 for transmission
-    
-    if (!radio.init())
-    {
-         Serial.println("Radio module failed to initialize");
-    }
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+RF24 radio(9, 10); // CE, CSN
+const byte address[6] = "00001";     //Byte of array representing the address. This is the address where we will send the data. This should be same on the receiving side.
+int button_pin = 2;
+boolean button_state   = 0;
+void setup() {
+pinMode(button_pin, INPUT);
+Serial.begin(9600);
+radio.begin();                  //Starting the Wireless communication
+radio.openWritingPipe(address); //Setting the address where we will send the data
+radio.setPALevel(RF24_PA_MIN);  //You can set it as minimum or maximum depending on the distance between the transmitter and receiver.
+radio.stopListening();          //This sets the module as transmitter
 }
- 
 void loop()
 {
-    // Reading from Serial
-    while (!Serial.available());
-    itoa(Serial.readString().toInt(), signalString, 10);
- 
-    // Send our signal
-    radio.send((uint8_t*)signalString, strlen(signalString));
- 
-    // Wait until the data has been sent
-    radio.waitPacketSent();
- 
- 
-    // Also inform the serial port that we are done!
-    Serial.println(signalString);
+button_state = digitalRead(button_pin);
+if(button_state == HIGH)
+{
+const char text[] = "Your Button State is HIGH";
+radio.write(&text, sizeof(text)); //Sending the message to receiver
+Serial.println(text);
+}
+else
+{
+const char text[] = "Your Button State is LOW";
+radio.write(&text, sizeof(text));                  //Sending the message to receiver
+Serial.println(text);
+}
+radio.write(&button_state, sizeof(button_state));  //Sending the message to receiver
+delay(1000);
 }
