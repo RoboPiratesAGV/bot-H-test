@@ -2,7 +2,7 @@ import serial
 import time
 
 # In windows, change PORT to whatever it is
-arduino = serial.Serial(port='/dev/ttyACM0', baudrate=9600, timeout=.05)
+arduino = serial.Serial(port='COM4', baudrate=9600, timeout=.05)
 
 
 class Bot:
@@ -45,11 +45,16 @@ class Bot:
         ]
 
     def send_signal(self, action_code, time_to_execute):
-        arduino.writelines(bytes(f"{action_code}\r\n", 'utf-8'))
+        arduino.write(bytes(f"{action_code}", 'utf-8'))
+        time.sleep(1)
+        print(arduino.readline().decode())
         time.sleep(time_to_execute)
 
     def execute_plan(self):
+        arduino.write(bytes(f"9", 'utf-8'))
+        print(arduino.readline().decode())
         for action_code, time_to_execute in self.plan:
+
             print(f"Executing: {self.actions[action_code]}")
             self.send_signal(action_code, time_to_execute)
 

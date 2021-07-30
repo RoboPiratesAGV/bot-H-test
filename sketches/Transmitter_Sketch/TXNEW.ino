@@ -3,7 +3,7 @@
 #include <RF24.h>
 RF24 radio(9, 10); // CE, CSN
 const byte address[6] = "00001";     //Byte of array representing the address. This is the address where we will send the data. This should be same on the receiving side.
-
+char signalString[10];
 void setup() {
   // put your setup code here, to run once:
 Serial.begin(9600);
@@ -17,9 +17,11 @@ void loop() {
   // put your main code here, to run repeatedly:
 if(Serial.available())
 {
-   char data = Serial.read();
-  radio.write(&data, sizeof(data)); //Sending the message to receiver
-Serial.println(data);
+   
+   //itoa(Serial.read().toInt(), signalString, 10);
+   
+  //radio.write((char)Serial.read(),1); //Sending the message to receiver
+   Serial.println((char)Serial.read());
 }
 
 }
