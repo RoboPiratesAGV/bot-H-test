@@ -17,7 +17,7 @@ void loop() {
 if (radio.available())              //Looking for the data.
 {
     //Saving the incoming data
-String text;
+char text;
 radio.read(&text, sizeof(text));    //Reading the data
 Serial.println(text);
 

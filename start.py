@@ -45,16 +45,12 @@ class Bot:
         ]
 
     def send_signal(self, action_code, time_to_execute):
-        arduino.write(bytes(f"{action_code}", 'utf-8'))
-        time.sleep(1)
-        print(arduino.readline().decode())
+        arduino.write(bytes(f"{action_code}", "utf-8"))
+        print(arduino.readline())
         time.sleep(time_to_execute)
 
     def execute_plan(self):
-        arduino.write(bytes(f"9", 'utf-8'))
-        print(arduino.readline().decode())
         for action_code, time_to_execute in self.plan:
-
             print(f"Executing: {self.actions[action_code]}")
             self.send_signal(action_code, time_to_execute)
 
